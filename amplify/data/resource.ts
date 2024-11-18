@@ -44,7 +44,8 @@ const schema = a.schema({
     })
 
     // return type of the query
-    .returns(a.ref('telemetry'))
+    //.returns(a.ref('telemetry'))
+    .returns(a.ref('Post'))
     // only allow signed-in users to call this API
     .authorization(allow => [allow.authenticated()])
     .handler(a.handler.function(echoHandler))
