@@ -6,6 +6,7 @@ const GRAPHQL_API_KEY = process.env.API_KEY as string;
 /**
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
+
 export const handler: Handler = async (event, context) => {
   console.log(`EVENT: ${JSON.stringify(event)}`);
   console.log(`Endpoint: ${GRAPHQL_ENDPOINT}`);
