@@ -8,6 +8,7 @@ const GRAPHQL_API_KEY = process.env.API_KEY as string;
  */
 export const handler: Handler = async (event, context) => {
   console.log(`EVENT: ${JSON.stringify(event)}`);
+  console.log(`Endpoint: ${GRAPHQL_ENDPOINT}`);
 
   let statusCode = 200;
   let response;
