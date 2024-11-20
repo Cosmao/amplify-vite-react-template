@@ -114,15 +114,28 @@ function App() {
       <ul>
         {telemetries.map((telemetri) => (
           <li
-            key={telemetri.device_id + telemetri.createdAt}>{JSON.stringify(telemetri)}</li>
+            key={telemetri.device_id + telemetri.createdAt}
+          >
+            {`Device: ${telemetri.device_id}`}<br />
+            {`Temp: ${telemetri.temperature ? telemetri.temperature.toFixed(2) + "°C" : "N/A"}`}
+            {`\tHumidity: ${telemetri.humidity ? telemetri.humidity.toFixed(2) + "%" : "N/A"}`}<br />
+            {`Time: ${new Date(telemetri.timestamp).toLocaleString("sv-SE", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+              hour12: false,
+            })}`}
+          </li>
         ))}
       </ul>
-
       <ul>
         {devices.map((device) => (
           <li
             onClick={() => deleteDevice(device.device_id)}
-            key={device.device_id + device.owner}>{JSON.stringify(device)}</li>
+            key={device.device_id + device.owner}>{`Device: ${device.device_id} Owner: ${device.owner}`}</li>
         ))}
       </ul>
 
