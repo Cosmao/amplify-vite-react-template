@@ -56,7 +56,7 @@ const schema = a.schema({
       status: a.string()
     })
     .identifier(["device_id"])
-    .authorization(allow => [allow.authenticated()])
+    .authorization(allow => [allow.owner()])
 
 });
 

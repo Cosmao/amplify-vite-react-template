@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
+import { getCurrentUser } from 'aws-amplify/auth';
 
 import {
   Button,
@@ -13,6 +14,7 @@ const client = generateClient<Schema>();
 
 function App() {
   const [telemetries, setTelemetry] = useState<Array<Schema["telemetry"]["type"]>>([]);
+  const [devices, setDevices] = useState<Array<Schema["devices"]["type"]>>([]);
 
   const { user, signOut } = useAuthenticator();
 
@@ -27,6 +29,16 @@ function App() {
 
 
   }, []);
+
+  useEffect(() => {
+    client.models.devices.observeQuery().subscribe({
+      next: (data) => { setDevices([...data.items]), console.log("data", data) },
+    });
+
+    client.models.devices.onCreate().subscribe({
+      next: (data) => console.log("Incoming data:", data),
+    })
+  })
 
   function createTelemetry() {
     const temperature = Math.random() * (30 - 20) + 20;
@@ -50,15 +62,22 @@ function App() {
     });
   }
 
-  function createDevice() {
-    const id = window.prompt("Enter device ID");
-    const currentUser =
+  async function createDevice() {
+    try {
+      const id = window.prompt("Enter device ID");
+      const { userId } = await getCurrentUser();
+      if (id === null || id.trim() === "") {
+        return;
+      }
 
       client.models.devices.create({
         device_id: id,
-        owner: currentUser,
-      })
+        owner: userId,
+      });
 
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   return (
@@ -82,10 +101,26 @@ function App() {
           Test Mutation
         </Button>
       }
+      {
+        <Button
+          variation="primary"
+          loadingText=""
+          onClick={createDevice}
+        >
+          Create Device
+        </Button>
+      }
       <ul>
         {telemetries.map((telemetri) => (
           <li
             key={telemetri.device_id + telemetri.createdAt}>{JSON.stringify(telemetri)}</li>
+        ))}
+      </ul>
+
+      <ul>
+        {devices.map((device) => (
+          <li
+            key={device.device_id + device.owner}>{JSON.stringify(device)}</li>
         ))}
       </ul>
 
