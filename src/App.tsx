@@ -61,17 +61,16 @@ function App() {
     });
   }
 
-  async function createDevice() {
+  function createDevice() {
     try {
       const id = window.prompt("Enter device ID");
-      const { userId } = await getCurrentUser();
       if (id === null || id.trim() === "") {
         return;
       }
 
       client.models.devices.create({
         device_id: id,
-        owner: userId,
+        owner: user.userId,
       });
 
     } catch (err) {
