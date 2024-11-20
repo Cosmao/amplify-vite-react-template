@@ -26,7 +26,8 @@ const schema = a.schema({
       device_id: a.string().required(),
       timestamp: a.timestamp().required(),
       temperature: a.float(),
-      humidity: a.float()
+      humidity: a.float(),
+      owner: a.string().required(),
     })
     .identifier(['device_id', 'timestamp'])
     .authorization((allow) => [allow.owner(), allow.publicApiKey()]),
