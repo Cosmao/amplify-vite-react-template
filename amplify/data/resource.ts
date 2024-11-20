@@ -47,7 +47,16 @@ const schema = a.schema({
     .returns(a.ref('telemetry'))
     // only allow signed-in users to call this API
     .authorization(allow => [allow.authenticated()])
-    .handler(a.handler.function(echoHandler))
+    .handler(a.handler.function(echoHandler)),
+
+  devices: a
+    .model({
+      device_id: a.string().required(),
+      owner: a.string().required(),
+      status: a.string()
+    })
+    .identifier(["device_id"])
+    .authorization(allow => [allow.authenticated()])
 
 });
 
