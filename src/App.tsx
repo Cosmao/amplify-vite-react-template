@@ -50,6 +50,17 @@ function App() {
     });
   }
 
+  function createDevice() {
+    const id = window.prompt("Enter device ID");
+    const currentUser =
+
+      client.models.devices.create({
+        device_id: id,
+        owner: currentUser,
+      })
+
+  }
+
   return (
     <main>
       <h1>{user?.signInDetails?.loginId}'s IoT</h1>
