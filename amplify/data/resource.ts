@@ -29,7 +29,7 @@ const schema = a.schema({
       humidity: a.float()
     })
     .identifier(['device_id', 'timestamp'])
-    .authorization((allow) => [allow.owner()]),
+    .authorization((allow) => [allow.owner(), allow.publicApiKey()]),
 
   addTelemetry: a
     .mutation()
@@ -46,7 +46,7 @@ const schema = a.schema({
     // return type of the query
     .returns(a.ref('telemetry'))
     // only allow signed-in users to call this API
-    .authorization(allow => [allow.authenticated()])
+    .authorization(allow => [allow.publicApiKey()])
     .handler(a.handler.function(echoHandler)),
 
   devices: a
@@ -56,7 +56,7 @@ const schema = a.schema({
       status: a.string()
     })
     .identifier(["device_id"])
-    .authorization(allow => [allow.owner()])
+    .authorization(allow => [allow.owner(), allow.publicApiKey()])
 
 });
 
@@ -67,6 +67,9 @@ export const data = defineData({
   schema,
   authorizationModes: {
     defaultAuthorizationMode: 'userPool',
+    apiKeyAuthorizationMode: {
+      expiresInDays: 365,
+    },
   },
 });
 

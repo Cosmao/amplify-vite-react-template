@@ -7,7 +7,6 @@ import {
   Table,
   useAuthenticator
 } from '@aws-amplify/ui-react';
-//import { ClientRoutingPolicy } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 
 const client = generateClient<Schema>();
 
@@ -21,21 +20,12 @@ function App() {
     client.models.telemetry.observeQuery().subscribe({
       next: (data) => { setTelemetry([...data.items]), console.log("data", data) },
     });
-
-    client.models.telemetry.onCreate().subscribe({
-      next: (data) => console.log("got something..: ", data),
-    })
-
-
   }, []);
 
   useEffect(() => {
     client.models.devices.observeQuery().subscribe({
       next: (data) => { setDevices([...data.items]), console.log("data", data) },
     });
-    client.models.devices.onCreate().subscribe({
-      next: (data) => console.log("Incoming data:", data),
-    })
   }, []);
 
   function createTelemetry() {
