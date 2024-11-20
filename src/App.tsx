@@ -20,9 +20,7 @@ function App() {
     client.models.telemetry.observeQuery().subscribe({
       next: (data) => { setTelemetry([...data.items]), console.log("data", data) },
     });
-  }, []);
 
-  useEffect(() => {
     client.models.devices.observeQuery().subscribe({
       next: (data) => { setDevices([...data.items]), console.log("data", data) },
     });
@@ -37,6 +35,7 @@ function App() {
       timestamp: new Date().getTime(),
       temperature: temperature,
       humidity: humidity,
+      owner: user.userId,
     });
   }
 
