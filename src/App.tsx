@@ -34,11 +34,10 @@ function App() {
     client.models.devices.observeQuery().subscribe({
       next: (data) => { setDevices([...data.items]), console.log("data", data) },
     });
-
     client.models.devices.onCreate().subscribe({
       next: (data) => console.log("Incoming data:", data),
     })
-  })
+  }, []);
 
   function createTelemetry() {
     const temperature = Math.random() * (30 - 20) + 20;
@@ -78,6 +77,10 @@ function App() {
     } catch (err) {
       console.log(err)
     }
+  }
+
+  async function deleteDevice(device_id: string) {
+    client.models.devices.delete({ device_id });
   }
 
   return (
@@ -120,6 +123,7 @@ function App() {
       <ul>
         {devices.map((device) => (
           <li
+            onClick={() => deleteDevice(device.device_id)}
             key={device.device_id + device.owner}>{JSON.stringify(device)}</li>
         ))}
       </ul>
