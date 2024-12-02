@@ -13,18 +13,39 @@ export const handler: Handler = async (event, context) => {
     console.log("SET THE DISCORD_ENDPOINT variable!");
     return;
   }
-  const request = new XMLHttpRequest();
 
-  request.open("POST", DISCORD_ENDPOINT);
-  request.setRequestHeader('Content-type', 'application/json');
+  let request;
+  let response;
+  let responseBody;
+  let statusCode = 200;
 
-  const params = {
-    username: "AWS-Webhook",
-    avatar_url: "",
-    content: "Test msg\nDevice: ${event.device_id}\nStatus: ${event.eventType}"
+  const headers = {
+    "Content-type": "application/json"
   }
-  request.send(JSON.stringify(params));
 
-  console.log("Status code: ", request.status);
+  request = new Request(DISCORD_ENDPOINT, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify({
+      username: "AWS-Webhook",
+      avatar_url: "",
+      content: "Test msg\nDevice: ${event.device_id}\nStatus: ${event.eventType}"
+    })
+  })
 
+  console.log("request:", request)
+
+  try {
+    response = await fetch(request);
+    responseBody = await response.json();
+    console.log("responseBody:", responseBody);
+  } catch (error) {
+    statusCode = 400;
+    console.log("ERROR:", JSON.stringify(error));
+  }
+
+  return {
+    statusCode,
+    body: JSON.stringify(responseBody)
+  };
 };
