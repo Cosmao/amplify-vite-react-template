@@ -1,6 +1,6 @@
 import { defineFunction, secret } from '@aws-amplify/backend';
 
-export const graphqlIoTCoreStatus = defineFunction({
+export const graphqlDiscordWebhook = defineFunction({
 
   environment: {
     DISCORD_ENDPOINT: secret("CUSTOM_DISCORD_ENDPOINT")
