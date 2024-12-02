@@ -9,6 +9,10 @@ export const handler: Handler = async (event, context) => {
   console.log(`EVENT: ${JSON.stringify(event)}`);
   console.log(`Endpoint: ${DISCORD_ENDPOINT}`);
 
+  if(!DISCORD_ENDPOINT){
+    console.log("SET THE CUSTOM_DISCORD_ENDPOINT variable!");
+    return;
+  }
   const request = new XMLHttpRequest();
 
   request.open("POST", DISCORD_ENDPOINT);
