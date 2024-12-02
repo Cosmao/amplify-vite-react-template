@@ -1,6 +1,6 @@
 import type { Handler } from 'aws-lambda';
 
-const DISCORD_ENDPOINT = process.env.API_KEY as string;
+const DISCORD_ENDPOINT = process.env.DISCORD_ENDPOINT as string;
 
 /**
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
@@ -9,7 +9,7 @@ export const handler: Handler = async (event, context) => {
   console.log(`EVENT: ${JSON.stringify(event)}`);
   console.log(`Endpoint: ${DISCORD_ENDPOINT}`);
 
-  if(!DISCORD_ENDPOINT){
+  if (!DISCORD_ENDPOINT) {
     console.log("SET THE DISCORD_ENDPOINT variable!");
     return;
   }
