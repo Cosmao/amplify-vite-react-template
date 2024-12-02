@@ -29,7 +29,7 @@ export const handler: Handler = async (event, context) => {
     body: JSON.stringify({
       username: "AWS-Webhook",
       avatar_url: "",
-      content: `Test msg\nDevice: ${event.device_id}\nStatus: ${event.eventType}`
+      content: `Device update\nDevice: ${event.device_id}\nStatus: ${event.eventType}`
     })
   })
 
@@ -39,9 +39,19 @@ export const handler: Handler = async (event, context) => {
     response = await fetch(request);
     responseBody = await response.json();
     console.log("responseBody:", responseBody);
+    if (responseBody.errors) {
+      statusCode = 400;
+    }
   } catch (error) {
     statusCode = 400;
-    console.log("ERROR:", JSON.stringify(error));
+    responseBody = {
+      errors: [
+        {
+          status: response?.status,
+          error: JSON.stringify(error),
+        }
+      ]
+    }
   }
 
   return {
