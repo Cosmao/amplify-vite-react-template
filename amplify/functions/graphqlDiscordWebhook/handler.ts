@@ -29,7 +29,7 @@ export const handler: Handler = async (event, context) => {
     body: JSON.stringify({
       username: "AWS-Webhook",
       avatar_url: "",
-      content: "Test msg\nDevice: ${event.device_id}\nStatus: ${event.eventType}"
+      content: `Test msg\nDevice: ${event.device_id}\nStatus: ${event.eventType}`
     })
   })
 
