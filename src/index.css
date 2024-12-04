@@ -11,7 +11,7 @@ body {
 
 main {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: stretch;
 }
 
@@ -27,9 +27,11 @@ button {
   transition: border-color 0.25s;
   color: white;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -62,4 +64,26 @@ li:hover {
 a {
   font-weight: 800;
   text-decoration: none;
+}
+
+.graph-container {
+  flex: 2;
+  /* Controls the graph's size relative to the other sections */
+  max-width: 70%;
+  /* Limits the graph's maximum width */
+  display: flex;
+  /* Enables Flexbox for the graph container */
+  justify-content: center;
+  /* Centers horizontally */
+  align-items: center;
+  /* Centers vertically */
+  min-height: 300px;
+  /* Ensures enough height for vertical centering */
+}
+
+.left-container {
+  flex: 1;
+  /* Ensures the left section is smaller than the graph */
+  overflow: auto;
+  /* Handles any overflowing content */
 }

@@ -115,12 +115,6 @@ function App() {
       intersect: false,
     },
     stacked: false,
-    plugins: {
-      title: {
-        display: true,
-        text: telemetries[0]?.device_id ? telemetries[0].device_id : "",
-      },
-    },
     scales: {
       y: {
         type: 'linear' as const,
@@ -164,115 +158,121 @@ function App() {
 
   return (
     <main>
-      <h1>{user?.signInDetails?.loginId}'s IoT</h1>
-      {
-        <Button
-          variation="primary"
-          loadingText=""
-          onClick={createTelemetry}
-        >
-          Create new Telemetry record
-        </Button>
-      }
-      {
-        <Button
-          variation="primary"
-          loadingText=""
-          onClick={createDevice}
-        >
-          Create Device
-        </Button>
-      }
-
-      <ul>
-        {telemetries
-          .slice(-5)
-          .reverse()
-          .map((telemetri) => (
-            <li
-              key={telemetri.device_id + telemetri.createdAt}
-            >
-              {`Device: ${telemetri.device_id}`}<br />
-              {`Temp: ${telemetri.temperature ? telemetri.temperature.toFixed(2) + "°C" : "N/A"}`}
-              {`\tHumidity: ${telemetri.humidity ? telemetri.humidity.toFixed(2) + "%" : "N/A"}`}<br />
-              {`Time: ${new Date(telemetri.timestamp).toLocaleString("sv-SE", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: false,
-              })}`}
-            </li>
-          ))}
-      </ul>
-
-      <Collection
-        items={devices}
-        type="list"
-        direction="row"
-        gap="20px"
-        wrap="nowrap"
-      >
-        {(item, index) => (
-          <Card
-            key={index}
-            borderRadius="medium"
-            maxWidth="20rem"
-            variation="outlined"
+      <div className="left-container">
+        <h1>{user?.signInDetails?.loginId}'s IoT</h1>
+        {
+          <Button
+            variation="primary"
+            loadingText=""
+            onClick={createTelemetry}
           >
-            <Image
-              src="/esp.png"
-              alt="Very nice picture of a ESP32"
-            />
-            <View padding="xs">
-              <Flex>
-                <Badge size="small" variation="info">
-                  {`Status: ${item.status ? item.status : `unknown`}`}
-                </Badge>
-              </Flex>
-              <Heading padding="medium">{item.device_id}</Heading>
-              <ul>
-                {telemetries
-                  .filter((telemetries) => telemetries.device_id == item.device_id)
-                  .slice(-1)
-                  .map((telemetri) => (
-                    <li
-                      key={telemetri.device_id + telemetri.createdAt}
-                    >
-                      {`Temp: ${telemetri.temperature ? telemetri.temperature.toFixed(2) + "°C" : "N/A"}`}
-                      {`\tHumidity: ${telemetri.humidity ? telemetri.humidity.toFixed(2) + "%" : "N/A"}`}<br />
-                      {`Time: ${new Date(telemetri.timestamp).toLocaleString("sv-SE", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        hour12: false,
-                      })}`}
-                    </li>
-                  ))}
-              </ul>
+            Create new Telemetry record
+          </Button>
+        }
+        {
+          <Button
+            columnStart="1"
+            columnEnd="-1"
+            variation="primary"
+            loadingText=""
+            onClick={createDevice}
+          >
+            Create Device
+          </Button>
+        }
 
-              <Button
-                variation="primary"
-                isFullWidth
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete(item.device_id);
-                }}
-              >Delete</Button>
-            </View>
-          </Card>
-        )}
-      </Collection>
+        <ul>
+          {telemetries
+            .slice(-5)
+            .reverse()
+            .map((telemetri) => (
+              <li
+                key={telemetri.device_id + telemetri.createdAt}
+              >
+                {`Device: ${telemetri.device_id}`}<br />
+                {`Temp: ${telemetri.temperature ? telemetri.temperature.toFixed(2) + "°C" : "N/A"}`}
+                {`\tHumidity: ${telemetri.humidity ? telemetri.humidity.toFixed(2) + "%" : "N/A"}`}<br />
+                {`Time: ${new Date(telemetri.timestamp).toLocaleString("sv-SE", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                  hour12: false,
+                })}`}
+              </li>
+            ))}
+        </ul>
 
-      <Line options={chartOptions} data={cartData}></Line>
+        <Collection
+          items={devices}
+          type="list"
+          direction="row"
+          gap="20px"
+          wrap="nowrap"
+        >
+          {(item, index) => (
+            <Card
+              key={index}
+              borderRadius="medium"
+              maxWidth="20rem"
+              variation="outlined"
+            >
+              <Image
+                src="/esp.png"
+                alt="Very nice picture of a ESP32"
+              />
+              <View padding="xs">
+                <Flex>
+                  <Badge size="small" variation="info">
+                    {`Status: ${item.status ? item.status : `unknown`}`}
+                  </Badge>
+                </Flex>
+                <Heading padding="medium">{item.device_id}</Heading>
+                <ul>
+                  {telemetries
+                    .filter((telemetries) => telemetries.device_id == item.device_id)
+                    .slice(-1)
+                    .map((telemetri) => (
+                      <li
+                        key={telemetri.device_id + telemetri.createdAt}
+                      >
+                        {`Temp: ${telemetri.temperature ? telemetri.temperature.toFixed(2) + "°C" : "N/A"}`}
+                        {`\tHumidity: ${telemetri.humidity ? telemetri.humidity.toFixed(2) + "%" : "N/A"}`}<br />
+                        {`Time: ${new Date(telemetri.timestamp).toLocaleString("sv-SE", {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          hour12: false,
+                        })}`}
+                      </li>
+                    ))}
+                </ul>
 
-      <Divider padding="xs" />
-      <button onClick={signOut}>Sign out</button>
+                <Button
+                  variation="primary"
+                  isFullWidth
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(item.device_id);
+                  }}
+                >Delete</Button>
+              </View>
+            </Card>
+          )}
+        </Collection>
+        <Divider padding="xs" />
+        <button onClick={signOut}>Sign out</button>
+      </div>
+
+      <div className="graph-container">
+        <Line options={chartOptions} data={cartData}></Line>
+      </div>
+
     </main >
 
   );
