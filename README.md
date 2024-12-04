@@ -7,7 +7,7 @@ This is a simple implementation of a IoT project that measures temperature and h
 
 ## Setup
 ### ESP32
-ESP setup can be found [here](https://github.com/Cosmao/esp32-idf-aws/)
+ESP setup can be found [here](https://github.com/Cosmao/esp32IoTCore)
 ### Amplify
 
 #### Deploying to AWS
