@@ -12,6 +12,18 @@ ESP setup can be found [here](https://github.com/Cosmao/esp32-idf-aws/)
 
 #### Deploying to AWS
 For detailed instructions on deploying your application, refer to the [deployment section](https://docs.amplify.aws/react/start/quickstart/#deploy-a-fullstack-app-to-aws) of our documentation.
+#### Specific steps after deploying
+We need to set our secrets so that amplify can use our newly created graphQL api and DiscordWebhook. Firstly we need to go to `AWS AppSync`, you should see your newly created graphQL API there. Go into settings and copy both the graphQL endpoint and API key. After you got those values go to `Hosting > Secrets` in the amplify dashboard and make 3 enviroment variables:
+ - `CUSTOM_LAMBDA_GRAPHQL_ENDPOINT`
+ - `CUSTOM_LAMBDA_GRAPHQL_KEY`
+ - `CUSTOM_DISCORD_ENDPOINT`
+Paste in your API Key and endpoint there.
+
+#### Custom domain
+If you have a custom domain hosted by AWS you can simply use the `Hosting > Custom domains` and pick the one you want to use in the provided dropdown.
+
+#### Discord webhook
+Go to your discord servers settings and find the Integration tab. Simply add another webhook and copy the endpoint you're given. Paste the endpoint into the `CUSTOM_DSCORD_ENDPOINT` variable inside amplify.
 
 ### IoT Core
 #### Security policy
@@ -66,12 +78,11 @@ SELECT *, clientID() AS device_id FROM "$aws/events/presence/+/+"
 ```
 Select the `Lambda` action again and search for `CoreStatus` and select it. Then create another action and select `Lambda` and search for DiscordWebhook. The first action will handle our database and website connection to keep the status updated there. DiscordWebhook will send a notification when the state changes to your selected channel.
 
-## Deploying to AWS
-For detailed instructions on deploying your application, refer to the [deployment section](https://docs.amplify.aws/react/start/quickstart/#deploy-a-fullstack-app-to-aws) of our documentation.
+## Notes
+Since we are on AWS we get scalability for "free" so we should be able to support a massive amount of devices and users of the front end as long as we can pay the AWS bill. Good practice would be to create users with the IAM system inside AWS so you dont have to use the root user which generally is a bad idea but for a short demo it does work.
 
-## Security
-
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+## Debugging
+If it doesnt work you can always check cloudwatch for any relevant logs that might help you out.
 
 ## License
 
