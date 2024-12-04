@@ -100,7 +100,6 @@ function App() {
   };
 
   const chartOptions = {
-
     onClick: function(evt: any, element: string | any[]) {
       evt;
       if (element.length > 0) {
@@ -108,7 +107,6 @@ function App() {
         deleteTelemetry(telemetries[ind].device_id, telemetries[ind].timestamp)
       }
     },
-
     responsive: true,
     interaction: {
       mode: 'index' as const,

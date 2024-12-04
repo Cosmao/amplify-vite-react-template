@@ -17,6 +17,7 @@ We need to set our secrets so that amplify can use our newly created graphQL api
  - `CUSTOM_LAMBDA_GRAPHQL_ENDPOINT`
  - `CUSTOM_LAMBDA_GRAPHQL_KEY`
  - `CUSTOM_DISCORD_ENDPOINT`
+
 Paste in your API Key and endpoint there.
 
 #### Custom domain
