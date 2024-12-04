@@ -2,6 +2,9 @@
 
 This is a simple implementation of a IoT project that measures temperature and humidity using a ESP32 (Any hardware that can use MQTT is usable). It features a secure MQTT connection using the built in functions of IoT Core with the option of disabling devices if you no longer trust them. For frontend it uses Amplify to keep within the AWS ecosystem. 
 
+## Goal
+The goal of the excercie was to get more familiar with cloud tools and more AWS in general and I feel like its been worthwhile thing to learn since it automates a lot of the process, especially the scalability part of it. Theres obviously the downsides with costs and being dependend on their ecosystem compared to a cloud solution where you depend on your own containers or even self hosting it. They've also made it easy to integrate all their different services as long as you know what to look for. 
+
 ## Flowchart
 ![Flowchart](flowchart.jpg "Flowchart")
 
@@ -28,7 +31,7 @@ Go to your discord servers settings and find the Integration tab. Simply add ano
 
 ### IoT Core
 #### Security policy
-The first thing we want to do in IoT Core is creating a policy under security, this is the one I use
+The first thing we want to do in IoT Core is creating a policy under security, this is the one I use.
 ```json
 {
   "Version": "2012-10-17",
@@ -36,14 +39,14 @@ The first thing we want to do in IoT Core is creating a policy under security, t
     {
       "Effect": "Allow",
       "Action": "iot:Connect",
-      "Resource": "arn:aws:iot:eu-central-1:194722443757:client/${iot:Connection.Thing.ThingName}"
+      "Resource": "arn:aws:iot:<YOUR-AWS-REGION>:<YOUR-AWS-ID>:client/${iot:Connection.Thing.ThingName}"
     },
     {
       "Effect": "Allow",
       "Action": "iot:Subscribe",
       "Resource": [
-        "arn:aws:iot:eu-central-1:194722443757:topicfilter/${iot:Connection.Thing.ThingName}/downlink",
-        "arn:aws:iot:eu-central-1:194722443757:topicfilter/$aws/things/${iot:Connection.Thing.ThingName}/shadow/*"
+        "arn:aws:iot:<YOUR-AWS-REGION>:<YOUR-AWS-ID>:topicfilter/${iot:Connection.Thing.ThingName}/downlink",
+        "arn:aws:iot:<YOUR-AWS-REGION>:<YOUR-AWS-ID>:topicfilter/$aws/things/${iot:Connection.Thing.ThingName}/shadow/*"
       ]
     },
     {
@@ -53,15 +56,16 @@ The first thing we want to do in IoT Core is creating a policy under security, t
         "iot:Receive"
       ],
       "Resource": [
-        "arn:aws:iot:eu-central-1:194722443757:topic/$aws/things/${iot:Connection.Thing.ThingName}/shadow/*",
-        "arn:aws:iot:eu-central-1:194722443757:topic/${iot:Connection.Thing.ThingName}/downlink",
-        "arn:aws:iot:eu-central-1:194722443757:topic/${iot:Connection.Thing.ThingName}/telemetry"
+        "arn:aws:iot:<YOUR-AWS-REGION>:<YOUR-AWS-ID>:topic/$aws/things/${iot:Connection.Thing.ThingName}/shadow/*",
+        "arn:aws:iot:<YOUR-AWS-REGION>:<YOUR-AWS-ID>:topic/${iot:Connection.Thing.ThingName}/downlink",
+        "arn:aws:iot:<YOUR-AWS-REGION>:<YOUR-AWS-ID>:topic/${iot:Connection.Thing.ThingName}/telemetry"
       ]
     }
   ]
 }
 
 ```
+You need to change the server region and AWS ID to your own.
 This will limit the topics that devices are allowed to subscribe to and post to, all of this is to increase the security for our solution.
 #### Connecting a ESP32
 Once this is done we can connect our ESP32 using the `Manage > All devices > Things > Create Thing` in IoT Core. Select unnamed shadow and the name to be the same as the ESP32's MAC address. Once this is done you should be able to see messages in the `MQTT test client` in IoT Core by subcribing to `#`.
@@ -78,6 +82,12 @@ Next we will create the rule for online/offline devices. Start by creating anoth
 SELECT *, clientID() AS device_id FROM "$aws/events/presence/+/+"
 ```
 Select the `Lambda` action again and search for `CoreStatus` and select it. Then create another action and select `Lambda` and search for DiscordWebhook. The first action will handle our database and website connection to keep the status updated there. DiscordWebhook will send a notification when the state changes to your selected channel.
+
+## Storage
+For any sort of long time storage we'd better move older data away from dynamoDB into a S3 bucket or similar. You can easily set up S3 backups of old data through the dynamoDB page on AWS. You'd have several options and can even do it in different tiers for older and older data depending on how often you need to access them.
+
+## Security
+All communication is encrypted with keys geneated by AWS through IoT core or with API keys for the graphQL API. One thing that noteworth is that everything I've done is with the root account which generally is frowned upon. You'd do better by making users with the least amount of privilege needed for the tasks its supposed to do so any sort of hack/leak would do minimal damage. On the ESP32 front you'd best burn in the certificates so they are harder for an attacker to extract.
 
 ## Notes
 Since we are on AWS we get scalability for "free" so we should be able to support a massive amount of devices and users of the front end as long as we can pay the AWS bill. Good practice would be to create users with the IAM system inside AWS so you dont have to use the root user which generally is a bad idea but for a short demo it does work.
