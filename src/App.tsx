@@ -1,12 +1,42 @@
 import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
-
 import {
   Button,
-  Table,
-  useAuthenticator
+  useAuthenticator,
+  Card,
+  Image,
+  View,
+  Heading,
+  Flex,
+  Badge,
+  Collection,
+  Divider,
 } from '@aws-amplify/ui-react';
+
+import moment from "moment";
+
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const client = generateClient<Schema>();
 
@@ -20,7 +50,6 @@ function App() {
     client.models.telemetry.observeQuery().subscribe({
       next: (data) => { setTelemetry([...data.items]), console.log("data", data) },
     });
-
     client.models.devices.observeQuery().subscribe({
       next: (data) => { setDevices([...data.items]), console.log("data", data) },
     });
@@ -36,16 +65,6 @@ function App() {
       temperature: temperature,
       humidity: humidity,
       owner: user.userId,
-    });
-  }
-
-  function testCreate() {
-    client.mutations.addTelemetry({
-      device_id: "666",
-      timestamp: new Date().getTime(),
-      owner: "0334a8d2-e021-707f-6c65-a9fac9f52221::0334a8d2-e021-707f-6c65-a9fac9f52221",
-      temperature: 66,
-      humidity: 66,
     });
   }
 
@@ -66,9 +85,82 @@ function App() {
     }
   }
 
+  function deleteTelemetry(device_id: string, timestamp: number) {
+    client.models.telemetry.delete({ device_id, timestamp })
+  }
+
   async function deleteDevice(device_id: string) {
     client.models.devices.delete({ device_id });
   }
+
+  const handleDelete = (deviceId: string) => {
+    if (window.confirm(`Are you sure you want to delete this device?\n${deviceId}`)) {
+      deleteDevice(deviceId);
+    }
+  };
+
+  const chartOptions = {
+
+    onClick: function(evt: any, element: string | any[]) {
+      evt;
+      if (element.length > 0) {
+        var ind = element[0].index;
+        deleteTelemetry(telemetries[ind].device_id, telemetries[ind].timestamp)
+      }
+    },
+
+    responsive: true,
+    interaction: {
+      mode: 'index' as const,
+      intersect: false,
+    },
+    stacked: false,
+    plugins: {
+      title: {
+        display: true,
+        text: telemetries[0]?.device_id ? telemetries[0].device_id : "",
+      },
+    },
+    scales: {
+      y: {
+        type: 'linear' as const,
+        display: true,
+        position: 'left' as const,
+      },
+      y1: {
+        type: 'linear' as const,
+        display: true,
+        position: 'right' as const,
+      }
+    },
+  };
+
+
+  const cartData = {
+    labels: telemetries.map((data) => {
+      return moment(data?.timestamp).format("HH:mm:ss");
+    }),
+    datasets: [
+      {
+        label: 'Temperature',
+        data: telemetries.map((data) => {
+          return data?.temperature;
+        }),
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        yAxisID: 'y',
+      },
+      {
+        label: 'Humidity',
+        data: telemetries.map((data) => {
+          return data?.humidity;
+        }),
+        borderColor: 'rgb(99, 255, 132)',
+        backgroundColor: 'rgba(99, 255, 132, 0.5)',
+        yAxisID: 'y1',
+      }
+    ],
+  };
 
   return (
     <main>
@@ -86,53 +178,103 @@ function App() {
         <Button
           variation="primary"
           loadingText=""
-          onClick={testCreate}
-        >
-          Test Mutation
-        </Button>
-      }
-      {
-        <Button
-          variation="primary"
-          loadingText=""
           onClick={createDevice}
         >
           Create Device
         </Button>
       }
+
       <ul>
-        {telemetries.map((telemetri) => (
-          <li
-            key={telemetri.device_id + telemetri.createdAt}
+        {telemetries
+          .slice(-5)
+          .reverse()
+          .map((telemetri) => (
+            <li
+              key={telemetri.device_id + telemetri.createdAt}
+            >
+              {`Device: ${telemetri.device_id}`}<br />
+              {`Temp: ${telemetri.temperature ? telemetri.temperature.toFixed(2) + "°C" : "N/A"}`}
+              {`\tHumidity: ${telemetri.humidity ? telemetri.humidity.toFixed(2) + "%" : "N/A"}`}<br />
+              {`Time: ${new Date(telemetri.timestamp).toLocaleString("sv-SE", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false,
+              })}`}
+            </li>
+          ))}
+      </ul>
+
+      <Collection
+        items={devices}
+        type="list"
+        direction="row"
+        gap="20px"
+        wrap="nowrap"
+      >
+        {(item, index) => (
+          <Card
+            key={index}
+            borderRadius="medium"
+            maxWidth="20rem"
+            variation="outlined"
           >
-            {`Device: ${telemetri.device_id}`}<br />
-            {`Temp: ${telemetri.temperature ? telemetri.temperature.toFixed(2) + "°C" : "N/A"}`}
-            {`\tHumidity: ${telemetri.humidity ? telemetri.humidity.toFixed(2) + "%" : "N/A"}`}<br />
-            {`Time: ${new Date(telemetri.timestamp).toLocaleString("sv-SE", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-              hour12: false,
-            })}`}
-          </li>
-        ))}
-      </ul>
-      <ul>
-        {devices.map((device) => (
-          <li
-            onClick={() => deleteDevice(device.device_id)}
-            key={device.device_id + device.owner}>{`Device: ${device.device_id} Owner: ${device.owner}`}</li>
-        ))}
-      </ul>
+            <Image
+              src="/esp.png"
+              alt="Very nice picture of a ESP32"
+            />
+            <View padding="xs">
+              <Flex>
+                <Badge size="small" variation="info">
+                  {`Status: ${item.status ? item.status : `unknown`}`}
+                </Badge>
+              </Flex>
+              <Heading padding="medium">{item.device_id}</Heading>
+              <ul>
+                {telemetries
+                  .filter((telemetries) => telemetries.device_id == item.device_id)
+                  .slice(-1)
+                  .map((telemetri) => (
+                    <li
+                      key={telemetri.device_id + telemetri.createdAt}
+                    >
+                      {`Temp: ${telemetri.temperature ? telemetri.temperature.toFixed(2) + "°C" : "N/A"}`}
+                      {`\tHumidity: ${telemetri.humidity ? telemetri.humidity.toFixed(2) + "%" : "N/A"}`}<br />
+                      {`Time: ${new Date(telemetri.timestamp).toLocaleString("sv-SE", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: false,
+                      })}`}
+                    </li>
+                  ))}
+              </ul>
 
-      <Table>
+              <Button
+                variation="primary"
+                isFullWidth
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(item.device_id);
+                }}
+              >Delete</Button>
+            </View>
+          </Card>
+        )}
+      </Collection>
 
-      </Table>
+      <Line options={chartOptions} data={cartData}></Line>
+
+      <Divider padding="xs" />
       <button onClick={signOut}>Sign out</button>
     </main >
+
   );
 }
 
