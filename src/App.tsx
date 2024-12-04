@@ -130,29 +130,29 @@ function App() {
   };
 
 
+  const filteredTelemetries = telemetries.filter((data) =>
+    devices.some((device) => device.device_id === data.device_id)
+  );
+
   const cartData = {
-    labels: telemetries.map((data) => {
-      return moment(data?.timestamp).format("HH:mm:ss");
-    }),
+    labels: filteredTelemetries.map((data) =>
+      moment(data?.timestamp).format("HH:mm:ss")
+    ),
     datasets: [
       {
         label: 'Temperature',
-        data: telemetries.map((data) => {
-          return data?.temperature;
-        }),
+        data: filteredTelemetries.map((data) => data?.temperature),
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
         yAxisID: 'y',
       },
       {
         label: 'Humidity',
-        data: telemetries.map((data) => {
-          return data?.humidity;
-        }),
+        data: filteredTelemetries.map((data) => data?.humidity),
         borderColor: 'rgb(99, 255, 132)',
         backgroundColor: 'rgba(99, 255, 132, 0.5)',
         yAxisID: 'y1',
-      }
+      },
     ],
   };
 
