@@ -92,6 +92,13 @@ All communication is encrypted with keys geneated by AWS through IoT core or wit
 ## Notes
 Since we are on AWS we get scalability for "free" so we should be able to support a massive amount of devices and users of the front end as long as we can pay the AWS bill. Good practice would be to create users with the IAM system inside AWS so you dont have to use the root user which generally is a bad idea but for a short demo it does work.
 
+## Images
+### Discord webhook
+![DiscordWebhook](discordwebhook.jpg "Webhook")
+### Website
+![Website](website.jpg "Website")
+
+
 ## Debugging
 If it doesnt work you can always check cloudwatch for any relevant logs that might help you out.
 
